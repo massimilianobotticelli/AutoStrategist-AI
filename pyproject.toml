@@ -1,0 +1,69 @@
+[tool.poetry]
+name = "autostrategist-ai"
+version = "0.1.0"
+description = "AI-powered platform for optimizing second-hand car sales on Databricks"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "~3.12"
+databricks-connect = ">=16.1.0"
+databricks-cli = ">=0.18.0"
+databricks-sdk = ">=0.18.0"
+pyspark = ">=4.0.0"
+mlflow = ">=2.9.0"
+langgraph = ">=0.0.40"
+langchain = ">=0.1.0"
+langchain-community = ">=0.0.10"
+langchain-openai = ">=0.0.5"
+pandas = ">=2.1.0"
+numpy = ">=1.24.0,<2.0.0"
+databricks-langchain = "^0.9.0"
+pyarrow = ">=14.0.0"
+kaggle = ">=1.5.16"
+streamlit = ">=1.29.0"
+pyyaml = ">=6.0.1"
+python-dotenv = ">=1.0.0"
+requests = ">=2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+black = ">=23.12.0"
+pylint = ">=3.0.0"
+pytest = ">=7.4.0"
+pytest-cov = ">=4.1.0"
+ipykernel = ">=6.27.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.eggs
+  | \.tox
+  | build
+  | dist
+  | __pycache__
+)/
+'''
+
+[tool.pylint.messages_control]
+max-line-length = 100
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --cov=src --cov-report=html --cov-report=term-missing"
