@@ -15,34 +15,8 @@ echo "📦 Installing Python dependencies with Poetry..."
 if [ -f "pyproject.toml" ]; then
     poetry install
 else
-    echo "⚠️  pyproject.toml not found. Initializing Poetry project..."
-    poetry init --no-interaction \
-        --name "autostrategist-ai" \
-        --description "AI-powered platform for optimizing second-hand car sales" \
-        --author "Your Name <your.email@example.com>" \
-        --python "^3.12" \
-        --dependency databricks-connect \
-        --dependency databricks-cli \
-        --dependency databricks-sdk \
-        --dependency pyspark \
-        --dependency mlflow \
-        --dependency langgraph \
-        --dependency langchain \
-        --dependency langchain-community \
-        --dependency langchain-openai \
-        --dependency streamlit \
-        --dependency pandas \
-        --dependency numpy \
-        --dependency kaggle \
-        --dependency pyyaml \
-        --dependency python-dotenv \
-        --dependency pyarrow
-    
-    # Add development dependencies
-    poetry add --group dev black pylint pytest pytest-cov ipykernel
-    
-    # Install dependencies
-    poetry install
+    echo "⚠️  pyproject.toml not found."
+    exit 1
 fi
 
 # Configure Databricks CLI (if not already configured)

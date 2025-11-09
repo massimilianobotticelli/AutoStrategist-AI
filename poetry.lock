@@ -1017,58 +1017,35 @@ typing-extensions = "*"
 dev = ["databricks-vectorsearch (>=0.50)", "hatch", "pytest", "ruff (==0.6.4)"]
 
 [[package]]
-name = "databricks-cli"
-version = "0.18.0"
-description = "A command line interface for Databricks"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "databricks-cli-0.18.0.tar.gz", hash = "sha256:87569709eda9af3e9db8047b691e420b5e980c62ef01675575c0d2b9b4211eb7"},
-    {file = "databricks_cli-0.18.0-py2.py3-none-any.whl", hash = "sha256:1176a5f42d3e8af4abfc915446fb23abc44513e325c436725f5898cbb9e3384b"},
-]
-
-[package.dependencies]
-click = ">=7.0"
-oauthlib = ">=3.1.0"
-pyjwt = ">=1.7.0"
-requests = ">=2.17.3"
-six = ">=1.10.0"
-tabulate = ">=0.7.7"
-urllib3 = ">=1.26.7,<3"
-
-[[package]]
 name = "databricks-connect"
-version = "17.3.1"
+version = "15.4.16"
 description = "Databricks Connect Client"
 optional = false
-python-versions = "==3.12.*"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "databricks_connect-17.3.1-py2.py3-none-any.whl", hash = "sha256:fad38200e7c4726103b973456c628e35b930b5b50137902b626967194edb1b95"},
+    {file = "databricks_connect-15.4.16-py2.py3-none-any.whl", hash = "sha256:09a87c3ac84ea09183dfb381d141b23854fed29f9ab45d832de8188884501314"},
 ]
 
 [package.dependencies]
-databricks-sdk = ">=0.46.0"
-googleapis-common-protos = ">=1.65.0"
-grpcio = ">=1.67.0"
-grpcio-status = ">=1.67.0"
-numpy = ">=1.15"
+databricks-sdk = ">=0.29.0"
+googleapis-common-protos = ">=1.56.4"
+grpcio = ">=1.59.3"
+grpcio-status = ">=1.59.3"
+numpy = ">=1.15,<2"
 packaging = ">=23.2"
 pandas = ">=1.0.5"
-py4j = ">=0.10.9.7,<0.10.9.10"
-pyarrow = ">=10.0.0"
+py4j = "0.10.9.7"
+pyarrow = ">=4.0.0"
 setuptools = ">=68.0.0"
 six = "*"
-zstandard = ">=0.23.0"
 
 [package.extras]
-connect = ["googleapis-common-protos (>=1.65.0)", "grpcio (>=1.67.0)", "grpcio-status (>=1.67.0)", "numpy (>=1.21)", "pandas (>=1.0.5)", "pyarrow (>=10.0.0)", "zstandard (>=0.23.0)"]
-ml = ["numpy (>=1.21)"]
-mllib = ["numpy (>=1.21)"]
-pandas-on-spark = ["numpy (>=1.21)", "pandas (>=1.0.5)", "pyarrow (>=10.0.0)"]
-pipelines = ["googleapis-common-protos (>=1.65.0)", "grpcio (>=1.67.0)", "grpcio-status (>=1.67.0)", "numpy (>=1.21)", "pandas (>=1.0.5)", "pyarrow (>=10.0.0)", "pyyaml (>=3.11)", "zstandard (>=0.23.0)"]
-sql = ["numpy (>=1.21)", "pandas (>=1.0.5)", "pyarrow (>=10.0.0)"]
+connect = ["googleapis-common-protos (>=1.56.4)", "grpcio (>=1.59.3)", "grpcio-status (>=1.59.3)", "numpy (>=1.15,<2)", "pandas (>=1.0.5)", "pyarrow (>=4.0.0)"]
+ml = ["numpy (>=1.15,<2)"]
+mllib = ["numpy (>=1.15,<2)"]
+pandas-on-spark = ["numpy (>=1.15,<2)", "pandas (>=1.0.5)", "pyarrow (>=4.0.0)"]
+sql = ["numpy (>=1.15,<2)", "pandas (>=1.0.5)", "pyarrow (>=4.0.0)"]
 
 [[package]]
 name = "databricks-langchain"
@@ -2668,23 +2645,6 @@ tenacity = ">=8.1.0,<8.4.0 || >8.4.0,<10.0.0"
 typing-extensions = ">=4.7.0,<5.0.0"
 
 [[package]]
-name = "langchain-openai"
-version = "1.0.2"
-description = "An integration package connecting OpenAI and LangChain"
-optional = false
-python-versions = "<4.0.0,>=3.10.0"
-groups = ["main"]
-files = [
-    {file = "langchain_openai-1.0.2-py3-none-any.whl", hash = "sha256:b3eb9b82752063b46452aa868d8c8bc1604e57631648c3bc325bba58d3aeb143"},
-    {file = "langchain_openai-1.0.2.tar.gz", hash = "sha256:621e8295c52db9a1fc74806a0bd227ea215c132c6c5e421d2982c9ee78468769"},
-]
-
-[package.dependencies]
-langchain-core = ">=1.0.2,<2.0.0"
-openai = ">=1.109.1,<3.0.0"
-tiktoken = ">=0.7.0,<1.0.0"
-
-[[package]]
 name = "langchain-text-splitters"
 version = "1.0.0"
 description = "LangChain text splitting utilities"
@@ -2769,14 +2729,14 @@ orjson = ">=3.10.1"
 
 [[package]]
 name = "langsmith"
-version = "0.4.41"
+version = "0.4.42"
 description = "Client library to connect to the LangSmith Observability and Evaluation Platform."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "langsmith-0.4.41-py3-none-any.whl", hash = "sha256:5cdc554e5f0361bf791fdd5e8dea16d5ba9dfce09b3b8f8bba5e99450c569b27"},
-    {file = "langsmith-0.4.41.tar.gz", hash = "sha256:b88d03bb157cf69d1afee250a658d847003babbbd9647f720edcc9b03a0857cd"},
+    {file = "langsmith-0.4.42-py3-none-any.whl", hash = "sha256:015b0a0c17eb1a61293e8cbb7d41778a4b37caddd267d54274ba94e4721b301b"},
+    {file = "langsmith-0.4.42.tar.gz", hash = "sha256:a6e808e47581403cb019b47c8c10627c1644f78ed4c03fa877d6ad661476c38f"},
 ]
 
 [package.dependencies]
@@ -3407,23 +3367,6 @@ files = [
     {file = "numpy-1.26.4-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:7e50d0a0cc3189f9cb0aeb3a6a6af18c16f59f004b866cd2be1c14b36134a4a0"},
     {file = "numpy-1.26.4.tar.gz", hash = "sha256:2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010"},
 ]
-
-[[package]]
-name = "oauthlib"
-version = "3.3.1"
-description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "oauthlib-3.3.1-py3-none-any.whl", hash = "sha256:88119c938d2b8fb88561af5f6ee0eec8cc8d552b7bb1f712743136eb7523b7a1"},
-    {file = "oauthlib-3.3.1.tar.gz", hash = "sha256:0f0f8aa759826a193cf66c12ea1af1637f87b9b4622d46e866952bb022e538c9"},
-]
-
-[package.extras]
-rsa = ["cryptography (>=3.0.0)"]
-signals = ["blinker (>=1.4.0)"]
-signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "openai"
@@ -4196,14 +4139,14 @@ tests = ["pytest"]
 
 [[package]]
 name = "py4j"
-version = "0.10.9.9"
+version = "0.10.9.7"
 description = "Enables Python programs to dynamically access arbitrary Java objects"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "py4j-0.10.9.9-py2.py3-none-any.whl", hash = "sha256:c7c26e4158defb37b0bb124933163641a2ff6e3a3913f7811b0ddbe07ed61533"},
-    {file = "py4j-0.10.9.9.tar.gz", hash = "sha256:f694cad19efa5bd1dee4f3e5270eb406613c974394035e5bfc4ec1aba870b879"},
+    {file = "py4j-0.10.9.7-py2.py3-none-any.whl", hash = "sha256:85defdfd2b2376eb3abf5ca6474b51ab7e0de341c75a02f46dc9b5976f5a5c1b"},
+    {file = "py4j-0.10.9.7.tar.gz", hash = "sha256:0b6e5315bb3ada5cf62ac651d107bb2ebc02def3dee9d9548e3baac644ea8dbb"},
 ]
 
 [[package]]
@@ -4518,24 +4461,6 @@ files = [
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
-name = "pyjwt"
-version = "2.10.1"
-description = "JSON Web Token implementation in Python"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "PyJWT-2.10.1-py3-none-any.whl", hash = "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb"},
-    {file = "pyjwt-2.10.1.tar.gz", hash = "sha256:3cc5772eb20009233caf06e9d8a0577824723b44e6648ee0a2aedb6cf9381953"},
-]
-
-[package.extras]
-crypto = ["cryptography (>=3.4.0)"]
-dev = ["coverage[toml] (==5.0.4)", "cryptography (>=3.4.0)", "pre-commit", "pytest (>=6.0.0,<7.0.0)", "sphinx", "sphinx-rtd-theme", "zope.interface"]
-docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
-tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
-
-[[package]]
 name = "pylint"
 version = "4.0.2"
 description = "python code static checker"
@@ -4574,27 +4499,6 @@ files = [
 
 [package.extras]
 diagrams = ["jinja2", "railroad-diagrams"]
-
-[[package]]
-name = "pyspark"
-version = "4.0.1"
-description = "Apache Spark Python API"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "pyspark-4.0.1.tar.gz", hash = "sha256:9d1f22d994f60369228397e3479003ffe2dd736ba79165003246ff7bd48e2c73"},
-]
-
-[package.dependencies]
-py4j = "0.10.9.9"
-
-[package.extras]
-connect = ["googleapis-common-protos (>=1.65.0)", "grpcio (>=1.67.0)", "grpcio-status (>=1.67.0)", "numpy (>=1.21)", "pandas (>=2.0.0)", "pyarrow (>=11.0.0)"]
-ml = ["numpy (>=1.21)"]
-mllib = ["numpy (>=1.21)"]
-pandas-on-spark = ["numpy (>=1.21)", "pandas (>=2.0.0)", "pyarrow (>=11.0.0)"]
-sql = ["numpy (>=1.21)", "pandas (>=2.0.0)", "pyarrow (>=11.0.0)"]
 
 [[package]]
 name = "pytest"
@@ -5441,6 +5345,18 @@ groups = ["main"]
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
+]
+
+[[package]]
+name = "speedtest-cli"
+version = "2.1.3"
+description = "Command line interface for testing internet bandwidth using speedtest.net"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "speedtest-cli-2.1.3.tar.gz", hash = "sha256:5e2773233cedb5fa3d8120eb7f97bcc4974b5221b254d33ff16e2f1d413d90f0"},
+    {file = "speedtest_cli-2.1.3-py2.py3-none-any.whl", hash = "sha256:75ff32c91af9ac1ce2b905476d6e92bd9eb2c0783f9e7d1939d74605c7d0b9ea"},
 ]
 
 [[package]]
@@ -6544,4 +6460,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12"
-content-hash = "89624b0cd28d972c65067d6ac2223c0ec7eaf2f10e1dd286191820802cc8cffa"
+content-hash = "a1d27698c51904b3508e52e1c539714906cd38dab712f6d0e2cdb817d471e055"
