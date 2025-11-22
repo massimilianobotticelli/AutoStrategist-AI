@@ -60,10 +60,11 @@ This project uses a modern data & AI architecture on Databricks:
 
 ```
 /root
-  ├── databricks.yml          # Main DABs definition
-  ├── databricks.example.yml  # Example DABs configuration
+  ├── databricks.yml          # Main DABs definition (user-configured)
+  ├── databricks.example.yml  # Example DABs configuration template
+  ├── .env.example            # Example environment variables template
   ├── resources/
-  │   └── ingestion.yml       # Job definitions for DABs
+  │   └── ingestion.yml       # Job definitions for DABs (defines ingest_kaggle_data job)
   └── src/
       └── ingestion/          # Databricks notebooks for data pipeline
           ├── 00_load_data.ipynb       # Download from Kaggle
