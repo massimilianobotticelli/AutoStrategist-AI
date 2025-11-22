@@ -5,12 +5,15 @@
 bundle:
   name: AutoStrategist-AI
 
+include:
+  - ./resources/ingestion.yml
+
 targets:
   dev:
     mode: development
     default: true
     workspace:
-      host: <YOUR_DATABRICKS_WORKSPACE_URL>
+      host: https://dbc-95e4ad93-dd1a.cloud.databricks.com/
 
   ## Optionally, there could be 'staging' or 'prod' targets here.
   #
