@@ -29,7 +29,10 @@ This project uses a modern data & AI architecture on Databricks:
 2. **Configure environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your credentials (Kaggle API credentials, etc.)
+   # Edit .env with your credentials:
+   # - KAGGLE_USERNAME and KAGGLE_KEY (required for data ingestion)
+   # - DATABRICKS_HOST and DATABRICKS_TOKEN (for programmatic access)
+   # - OPENAI_API_KEY (if using external LLM)
    ```
 
 3. **Configure Databricks CLI**
@@ -43,7 +46,8 @@ This project uses a modern data & AI architecture on Databricks:
    cp databricks.example.yml databricks.yml
    # Edit databricks.yml:
    # - Update workspace.host with your Databricks workspace URL
-   # - Update variables.my_cluster_id with your cluster ID (or use the default)
+   # - Update variables.my_cluster_id with your cluster ID
+   #   (find this in your Databricks workspace under Compute -> [your cluster] -> Advanced Options)
    ```
 
 5. **Validate and deploy the bundle**
