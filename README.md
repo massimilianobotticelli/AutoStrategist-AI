@@ -41,7 +41,9 @@ This project uses a modern data & AI architecture on Databricks:
 4. **Update Databricks Asset Bundle configuration**
    ```bash
    cp databricks.example.yml databricks.yml
-   # Edit databricks.yml with your workspace URL and cluster ID
+   # Edit databricks.yml:
+   # - Update workspace.host with your Databricks workspace URL
+   # - Update variables.my_cluster_id with your cluster ID (or use the default)
    ```
 
 5. **Validate and deploy the bundle**
