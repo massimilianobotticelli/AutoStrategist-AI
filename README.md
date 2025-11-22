@@ -8,18 +8,15 @@ This project uses a modern data & AI architecture on Databricks:
 
 - **Bronze Layer**: Raw Kaggle data ingestion
 - **Silver Layer**: Cleaned and standardized data
-- **Gold Layer**: Aggregated market metrics
-- **AI Agent**: LangGraph-based intelligent assistant
-- **Frontend**: Streamlit app via Databricks Apps
+- **Gold Layer**: Aggregated market metrics and analytics
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Docker Desktop
-- Visual Studio Code with Remote - Containers extension
 - Databricks workspace (Free Edition works)
-- Kaggle API credentials
+- Databricks CLI installed ([installation guide](https://docs.databricks.com/dev-tools/cli/install.html))
+- Kaggle API credentials (for data ingestion)
 
 ### Development Setup
 
@@ -32,33 +29,25 @@ This project uses a modern data & AI architecture on Databricks:
 2. **Configure environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your credentials
+   # Edit .env with your credentials (Kaggle API credentials, etc.)
    ```
 
-3. **Open in Dev Container**
-   - Open VS Code
-   - Press `F1` and select "Dev Containers: Reopen in Container"
-   - Wait for the container to build and initialize
-
-4. **Configure Git (if needed)**
-   ```bash
-   git config --global user.name "Your Name"
-   git config --global user.email "your.email@example.com"
-   ```
-
-5. **Install dependencies with Poetry**
-   ```bash
-   poetry install
-   ```
-
-6. **Configure Databricks**
+3. **Configure Databricks CLI**
    ```bash
    databricks configure --token
+   # Enter your Databricks workspace URL and personal access token
    ```
 
-7. **Initialize Databricks Asset Bundle**
+4. **Update Databricks Asset Bundle configuration**
    ```bash
-   databricks bundle init
+   cp databricks.example.yml databricks.yml
+   # Edit databricks.yml with your workspace URL and cluster ID
+   ```
+
+5. **Validate and deploy the bundle**
+   ```bash
+   databricks bundle validate
+   databricks bundle deploy
    ```
 
 ## 📁 Project Structure
@@ -66,89 +55,69 @@ This project uses a modern data & AI architecture on Databricks:
 ```
 /root
   ├── databricks.yml          # Main DABs definition
-  ├── requirements.txt        # Python dependencies
-  ├── src/
-  │   ├── ingestion/          # Scripts for Kaggle -> Bronze
-  │   ├── transformation/     # PySpark scripts for Silver/Gold
-  │   ├── agent/              # LangGraph agent definition & tools
-  │   └── utils/              # Shared helpers
-  └── apps/
-      └── app.py              # Streamlit frontend
+  ├── databricks.example.yml  # Example DABs configuration
+  ├── resources/
+  │   └── ingestion.yml       # Job definitions for DABs
+  └── src/
+      └── ingestion/          # Databricks notebooks for data pipeline
+          ├── 00_load_data.ipynb       # Download from Kaggle
+          ├── 01_ingest_data.ipynb     # Ingest to Bronze layer
+          ├── 02_prepare_data.ipynb    # Transform to Silver layer
+          └── 03_enrich_data.ipynb     # Enrich to Gold layer
 ```
 
 ## 🛠️ Development Workflow
 
-### Poetry Commands
-
-```bash
-# Add a new dependency
-poetry add <package-name>
-
-# Add a development dependency
-poetry add --group dev <package-name>
-
-# Update dependencies
-poetry update
-
-# Activate virtual environment
-poetry shell
-
-# Run command in Poetry environment
-poetry run <command>
-```
-
-### Running Locally
+### Working with Databricks Asset Bundles
 
 ```bash
 # Validate DABs configuration
-poetry run databricks bundle validate
+databricks bundle validate
 
-# Deploy to Databricks
-poetry run databricks bundle deploy
+# Deploy to Databricks (creates/updates jobs and notebooks)
+databricks bundle deploy
 
-# Run Streamlit app locally
-poetry run streamlit run apps/app.py
+# Run a specific job
+databricks bundle run ingest_kaggle_data
 ```
 
-### Testing
+### Editing Notebooks
+
+You can edit the notebooks in two ways:
+
+1. **In Databricks Workspace**: After deploying, navigate to your Databricks workspace and edit notebooks directly in the UI
+
+2. **Locally with VS Code**: Use the Databricks extension for VS Code to sync and edit notebooks locally, then deploy changes
+
+### Monitoring Jobs
 
 ```bash
-# Run tests
-poetry run pytest
+# List jobs in your bundle
+databricks jobs list
 
-# Run with coverage
-poetry run pytest --cov=src tests/
-```
+# Get job run details
+databricks runs get --run-id <run-id>
 
-### Code Formatting
-
-```bash
-# Format code
-poetry run black src/ apps/ tests/
-
-# Lint code
-poetry run pylint src/ apps/
+# View job logs
+databricks runs get-output --run-id <run-id>
 ```
 
 ## 📊 Data Pipeline
 
-1. **Ingestion**: Kaggle Craigslist Cars+Trucks dataset → Databricks Volumes
-2. **Transformation**: PySpark jobs clean and aggregate data
-3. **Gold Layer**: Pre-calculated metrics for fast agent lookups
+The data pipeline is implemented as a series of Databricks notebooks that run as jobs:
 
-## 🤖 AI Agent
+1. **00_load_data.ipynb**: Downloads the Kaggle Craigslist Cars+Trucks dataset
+2. **01_ingest_data.ipynb**: Ingests raw data to Bronze layer in Databricks
+3. **02_prepare_data.ipynb**: Cleans and transforms data to Silver layer using PySpark
+4. **03_enrich_data.ipynb**: Enriches and aggregates data to Gold layer for analytics
 
-The LangGraph agent performs:
-- Market value lookup from Gold tables
-- Repair cost estimation from unstructured notes
-- Strategic pricing recommendations
-- Sales insert generation using LLM
+The pipeline follows the medallion architecture (Bronze → Silver → Gold) and is orchestrated through Databricks Asset Bundles.
 
 ## 🔐 Security
 
-- Store credentials in Databricks Secrets
+- Store credentials in Databricks Secrets for production use
 - Use `.env` for local development (never commit!)
-- Mount `.databrickscfg` in dev container
+- Keep your `.databrickscfg` file secure and never commit it to version control
 
 ## 📝 License
 
