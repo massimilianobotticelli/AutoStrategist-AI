@@ -227,3 +227,9 @@ mlartifacts/
 
 # Kaggle
 kaggle.json
+
+# Conda
+.conda_env
+
+# VSCode
+.vscode/
