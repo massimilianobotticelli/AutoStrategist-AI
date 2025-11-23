@@ -17,11 +17,17 @@ resources:
           depends_on:
             - task_key: ingest_data
           notebook_task:
-            notebook_path: ../src/ingestion/02_prepare_data.ipynb
+            notebook_path: ../src/ingestion/020_prepare_data.ipynb
+
+        - task_key: car_models_clean
+          depends_on:
+            - task_key: prepare_data
+          notebook_task:
+            notebook_path: ../src/ingestion/021_car_models_clean.ipynb            
 
         - task_key: enrich_data
           depends_on:
-            - task_key: prepare_data
+            - task_key: car_models_clean
           notebook_task:
             notebook_path: ../src/ingestion/03_enrich_data.ipynb  
 
