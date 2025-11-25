@@ -6,12 +6,13 @@ import os
 
 from databricks.connect import DatabricksSession
 from pyspark.dbutils import DBUtils
+from reparation_data import reparation_csv
 
 # Initialize Spark and DBUtils
 spark = DatabricksSession.builder.getOrCreate()
+dbutils = DBUtils(spark)
 
-
-# ### Setup volume configuration
+# Setup volume configuration
 CATALOG = "workspace"
 SCHEMA = "car_sales"
 VOLUME = "raw_data"
@@ -19,32 +20,24 @@ DATASET_NAME = "austinreese/craigslist-carstrucks-data"
 TARGET_VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/"
 
 
-def setup_kaggle_credentials():
-    """
-    Sets up Kaggle credentials from Databricks secrets or environment variables.
+# Kaggle credentials setup
+print("Configuring Kaggle credentials...")
+try:
+    # Try to fetch secrets from Databricks
+    os.environ["KAGGLE_USERNAME"] = dbutils.secrets.get(
+        scope="hackathon_secrets", key="kaggle_username"
+    )
+    os.environ["KAGGLE_KEY"] = dbutils.secrets.get(scope="hackathon_secrets", key="kaggle_key")
+    from kaggle.api.kaggle_api_extended import KaggleApi  # isort: skip # noqa: E402
+except (KeyError, AttributeError, RuntimeError) as e:
+    print("Notice: Could not fetch secrets. Checking local environment.")
+    raise e
 
-    Raises:
-        EnvironmentError: If credentials are not found.
-    """
-    print("Configuring Kaggle credentials...")
-    dbutils = DBUtils(spark)
-    try:
-        # Try to fetch secrets from Databricks
-        os.environ["KAGGLE_USERNAME"] = dbutils.secrets.get(
-            scope="hackathon_secrets", key="kaggle_username"
-        )
-        os.environ["KAGGLE_KEY"] = dbutils.secrets.get(
-            scope="hackathon_secrets", key="kaggle_key"
-        )
-        from kaggle.api.kaggle_api_extended import KaggleApi  # isort: skip # noqa: E402
-    except (KeyError, AttributeError, RuntimeError) as e:
-        print("Notice: Could not fetch secrets. Checking local environment.")
-        raise e
-
-    if not os.environ.get("KAGGLE_USERNAME") or not os.environ.get("KAGGLE_KEY"):
-        raise EnvironmentError(
-            "KAGGLE_USERNAME and KAGGLE_KEY must be set via Databricks Secrets or local environment variables."
-        )
+if not os.environ.get("KAGGLE_USERNAME") or not os.environ.get("KAGGLE_KEY"):
+    raise EnvironmentError(
+        "KAGGLE_USERNAME and KAGGLE_KEY must be set via Databricks Secrets or local"
+        " environment variables."
+    )
 
 
 def create_volume_if_not_exists():
@@ -59,9 +52,7 @@ def create_volume_if_not_exists():
         print("✅ Volume setup completed successfully!")
     except Exception as e:
         print(f"⚠️  Warning: Auto-creation failed. Error: {e}")
-        print(
-            "💡 You may need to create the catalog/schema/volume manually in the Databricks UI"
-        )
+        print("💡 You may need to create the catalog/schema/volume manually in the Databricks UI")
         raise e
 
 
@@ -90,11 +81,7 @@ def download_from_kaggle():
 
             file_size_mb = file_size / (1024 * 1024)
             file_size_gb = file_size / (1024 * 1024 * 1024)
-            size_str = (
-                f"{file_size_gb:.2f} GB"
-                if file_size_gb > 1
-                else f"{file_size_mb:.2f} MB"
-            )
+            size_str = f"{file_size_gb:.2f} GB" if file_size_gb > 1 else f"{file_size_mb:.2f} MB"
             print(f"  📄 {filename}: {size_str}")
 
         total_size_gb = total_size / (1024 * 1024 * 1024)
@@ -105,11 +92,19 @@ def download_from_kaggle():
     print("Ingestion complete!")
 
 
+def load_reparation_data():
+    """Loads reparation data into a Delta table."""
+    csv_path = os.path.join(TARGET_VOLUME_PATH, "car_repair_costs.csv")
+    with open(csv_path, "w", encoding="utf-8") as f:
+        f.write(reparation_csv.strip())
+    print(f"CSV written to {csv_path}")
+
+
 def main():
     """Main execution flow."""
-    setup_kaggle_credentials()
     create_volume_if_not_exists()
     download_from_kaggle()
+    load_reparation_data()
 
 
 if __name__ == "__main__":

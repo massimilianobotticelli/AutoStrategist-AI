@@ -3,31 +3,39 @@ resources:
     ingest_kaggle_data:
       name: "[${bundle.target}] Ingest Kaggle Data"
       tasks:
-        - task_key: download_from_kaggle
-          notebook_task:
-            notebook_path: ../src/ingestion/00_load_data.ipynb
+        - task_key: "test_task"
+          environment_key: ingestion-env
+          spark_python_task:
+            python_file: "../src/ingestion/00_load_data.py"            
 
-        - task_key: ingest_data
-          depends_on:
-            - task_key: download_from_kaggle
-          notebook_task:
-            notebook_path: ../src/ingestion/01_ingest_data.ipynb
+        - task_key: "test_task"
+          environment_key: ingestion-env
+          spark_python_task:
+            python_file: "../src/ingestion/01_ingest_data.py"   
 
-        - task_key: prepare_data
-          depends_on:
-            - task_key: ingest_data
-          notebook_task:
-            notebook_path: ../src/ingestion/020_prepare_data.ipynb
+        # - task_key: prepare_data
+        #   depends_on:
+        #     - task_key: ingest_data
+        #   notebook_task:
+        #     notebook_path: ../src/ingestion/020_prepare_data.ipynb
 
-        - task_key: car_models_clean
-          depends_on:
-            - task_key: prepare_data
-          notebook_task:
-            notebook_path: ../src/ingestion/021_car_models_clean.ipynb            
+        # - task_key: car_models_clean
+        #   depends_on:
+        #     - task_key: prepare_data
+        #   notebook_task:
+        #     notebook_path: ../src/ingestion/021_car_models_clean.ipynb            
 
-        - task_key: enrich_data
-          depends_on:
-            - task_key: car_models_clean
-          notebook_task:
-            notebook_path: ../src/ingestion/03_enrich_data.ipynb  
+        # - task_key: enrich_data
+        #   depends_on:
+        #     - task_key: car_models_clean
+        #   notebook_task:
+        #     notebook_path: ../src/ingestion/03_enrich_data.ipynb 
+
+      environments:
+        - environment_key: ingestion-env
+          spec:
+            client: "3"
+            dependencies:
+              - kaggle
+              # - databricks_langchain          
 
