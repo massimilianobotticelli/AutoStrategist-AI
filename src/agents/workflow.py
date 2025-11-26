@@ -1,3 +1,4 @@
+import dotenv
 import mlflow
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
@@ -8,7 +9,6 @@ from prompts import system_prompt
 from pyspark.dbutils import DBUtils
 from tools import search_reparation_database, search_vehicle_database
 
-import dotenv
 dotenv.load_dotenv()
 
 # Initialize Spark and DBUtils
@@ -21,6 +21,7 @@ mlflow.set_experiment("/Shared/AutoStrategist-AI/")
 
 
 mlflow.langchain.autolog()
+
 
 def get_table_schema_string(table_name: str) -> str:
     """

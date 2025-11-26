@@ -12,11 +12,11 @@ from messy strings, cleans the dataframe, and saves the result.
 """
 
 import json
+
 import mlflow
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain_core.prompts import PromptTemplate
-
 from prompts import prompt_clean_models
 
 # Constants
@@ -47,7 +47,7 @@ def clean_model_names(df, manufacturer_name, model_name):
     mask = (df["manufacturer"] == manufacturer_name) & (
         df["model"].str.contains(model_name, case=False, na=False)
     )
-    
+
     # Update in place using loc
     df.loc[mask, "model"] = model_name
     return df
@@ -68,13 +68,13 @@ def get_normalized_models_from_llm(unique_models_list):
 
     print("LLM invocation complete. Parsing output...")
     try:
-        answer = json.loads(llm_output.content)[-1]['text']
+        answer = json.loads(llm_output.content)[-1]["text"]
         dict_models = json.loads(answer)
     except Exception as e:
         print(f"Error parsing LLM output: {e}")
         print(f"Raw output: {llm_output.content}")
         raise e
-    
+
     return dict_models
 
 
@@ -90,7 +90,7 @@ def main():
 
     print(f"Reading data from {SOURCE_TABLE}...")
     sdf_vehicles = spark.table(SOURCE_TABLE)
-    
+
     # Convert to pandas (assuming small dataset fits in driver memory)
     print("Converting to Pandas DataFrame...")
     df_vehicles = sdf_vehicles.toPandas()
@@ -98,13 +98,17 @@ def main():
     print(f"Initial row count: {len(df_vehicles)}")
 
     # Prepare input for LLM
-    unique_df = df_vehicles.drop_duplicates(subset=["manufacturer", "model"]).sort_values(by=["manufacturer", "model"])
+    unique_df = df_vehicles.drop_duplicates(subset=["manufacturer", "model"]).sort_values(
+        by=["manufacturer", "model"]
+    )
     grouped = unique_df.groupby(["manufacturer", "model"])
-    unique_models_list = list(grouped.indices.keys()) # keys of the groups are the (manufacturer, model) tuples
+    unique_models_list = list(
+        grouped.indices.keys()
+    )  # keys of the groups are the (manufacturer, model) tuples
 
     # Get normalized models
     dict_models = get_normalized_models_from_llm(unique_models_list)
-    
+
     print("Applying model normalization...")
     df_vehicles_cleaned = df_vehicles.copy()
 

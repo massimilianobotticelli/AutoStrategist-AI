@@ -47,9 +47,9 @@ def main():
     print(
         f"Filtering for manufacturers: {TARGET_MANUFACTURERS} and sampling {SAMPLE_FRACTION*100}%..."
     )
-    df_filtered = df_original.filter(
-        df_original.manufacturer.isin(TARGET_MANUFACTURERS)
-    ).sample(SAMPLE_FRACTION)
+    df_filtered = df_original.filter(df_original.manufacturer.isin(TARGET_MANUFACTURERS)).sample(
+        SAMPLE_FRACTION
+    )
 
     # Drop unnecessary columns
     print(f"Dropping columns: {COLUMNS_TO_DROP}...")

@@ -1,15 +1,17 @@
 import json
 
-from data_structures import (MarketAnalysisResults, RepairAnalysisResults,
-                             RepairData, VehicleData)
+from data_structures import MarketAnalysisResults, RepairAnalysisResults, RepairData, VehicleData
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage
 from langchain.tools import tool
-from prompts import (market_analysit_description, repair_specialist_description,
-                     market_analyst_system_prompt, repair_specialist_system_prompt)
-
+from prompts import (
+    market_analysit_description,
+    market_analyst_system_prompt,
+    repair_specialist_description,
+    repair_specialist_system_prompt,
+)
 from pyspark.dbutils import DBUtils
 
 # Initialize Spark and DBUtils
