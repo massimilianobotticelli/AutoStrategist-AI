@@ -3,33 +3,38 @@ resources:
     ingest_kaggle_data:
       name: "[${bundle.target}] Ingest Kaggle Data"
       tasks:
-        - task_key: "test_task"
-          environment_key: ingestion-env
-          spark_python_task:
-            python_file: "../src/ingestion/00_load_data.py"            
+        # - task_key: "load_data"
+        #   environment_key: ingestion-env
+        #   spark_python_task:
+        #     python_file: "../src/ingestion/load_data.py"            
 
-        - task_key: "test_task"
-          environment_key: ingestion-env
-          spark_python_task:
-            python_file: "../src/ingestion/01_ingest_data.py"   
+        # - task_key: "ingest_data"
+        #   environment_key: ingestion-env
+        #   depends_on:
+        #     - task_key: load_data          
+        #   spark_python_task:
+        #     python_file: "../src/ingestion/ingest_data.py"   
 
         # - task_key: prepare_data
+        #   environment_key: ingestion-env
         #   depends_on:
         #     - task_key: ingest_data
-        #   notebook_task:
-        #     notebook_path: ../src/ingestion/020_prepare_data.ipynb
+        #   spark_python_task:
+        #     python_file: "../src/ingestion/prepare_data.py"
 
         # - task_key: car_models_clean
-        #   depends_on:
-        #     - task_key: prepare_data
-        #   notebook_task:
-        #     notebook_path: ../src/ingestion/021_car_models_clean.ipynb            
+        #   environment_key: ingestion-env
+        #   # depends_on:
+        #     # - task_key: prepare_data
+        #   spark_python_task:
+        #     python_file: "../src/ingestion/car_models_clean.py"
 
-        # - task_key: enrich_data
-        #   depends_on:
-        #     - task_key: car_models_clean
-        #   notebook_task:
-        #     notebook_path: ../src/ingestion/03_enrich_data.ipynb 
+        - task_key: enrich_data
+          environment_key: ingestion-env
+          # depends_on:
+          #   - task_key: car_models_clean
+          spark_python_task:
+            python_file: "../src/ingestion/enrich_data.py"
 
       environments:
         - environment_key: ingestion-env
@@ -37,5 +42,5 @@ resources:
             client: "3"
             dependencies:
               - kaggle
-              # - databricks_langchain          
+              - databricks_langchain          
 
