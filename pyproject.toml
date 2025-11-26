@@ -11,6 +11,7 @@ python = "~3.11"
 mlflow = "^3.6.0"
 kaggle = "^1.8.0"
 databricks-langchain = "^0.11.0"
+streamlit = "^1.51.0"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^7.0.0"
