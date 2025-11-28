@@ -9,3 +9,8 @@ env:
     value: "false"
   - name: "SERVING_ENDPOINT"
     valueFrom: "serving-endpoint"
+  - name: MLFLOW_TRACKING_URI
+    value: "databricks"
+  - name: MLFLOW_REGISTRY_URI
+    value: "databricks-uc"
+

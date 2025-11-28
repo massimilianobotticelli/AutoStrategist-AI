@@ -1,0 +1,5 @@
+resources:
+  apps:
+    autostrategist-ai:
+      name: 'autostrategist-ai'
+      source_code_path: '../app/'
