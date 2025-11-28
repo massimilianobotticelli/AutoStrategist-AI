@@ -5,9 +5,10 @@ from databricks_langchain import ChatDatabricks
 from langchain.agents import create_agent
 from langchain.messages import AIMessage, HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
-from prompts import system_prompt
 from pyspark.dbutils import DBUtils
-from tools import search_reparation_database, search_vehicle_database
+
+from autostrategist_ai.agents.prompts import system_prompt
+from autostrategist_ai.agents.tools import search_reparation_database, search_vehicle_database
 
 dotenv.load_dotenv()
 
@@ -42,8 +43,6 @@ def get_table_schema_string(table_name: str) -> str:
         return f"Error fetching schema for {table_name}: {e}"
 
 
-print(get_table_schema_string("workspace.car_sales.vehicles_enriched"))
-
 llm = ChatDatabricks(endpoint="databricks-gpt-oss-120b")
 
 
@@ -56,40 +55,10 @@ repair_table_context = get_table_schema_string("workspace.car_sales.reparations"
 
 # Create the Agent
 
-memory = MemorySaver()
-
 graph = create_agent(
     model=llm,
     system_prompt=system_prompt,
     tools=[search_vehicle_database, search_reparation_database],
-    checkpointer=memory,
 )
 
-
-def run_threaded_chat(graph):
-    # Unique ID for this specific conversation session
-    config = {"configurable": {"thread_id": "test_session_1"}}
-
-    print("--- Starting Threaded Chat ---")
-
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() in ["quit", "exit"]:
-            break
-
-        # With checkpointers, you ONLY pass the NEW message.
-        # The graph loads previous history automatically based on thread_id.
-        events = graph.stream(
-            {"messages": [HumanMessage(content=user_input)]}, config=config, stream_mode="values"
-        )
-
-        # Print the output stream
-        for event in events:
-            if "messages" in event:
-                last_msg = event["messages"][-1]
-                # Only print if it's an AI message (avoid re-printing user input)
-                if isinstance(last_msg, AIMessage):
-                    print(f"Agent: {last_msg.content}")
-
-
-run_threaded_chat(graph)
+mlflow.models.set_model(model=graph)

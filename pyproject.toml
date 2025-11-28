@@ -2,7 +2,7 @@
 name = "autostrategist-ai"
 version = "0.1.0"
 description = "AI-powered platform for optimizing second-hand car sales on Databricks"
-authors = ["Massimiliano Botticelli <>"]
+authors = ["Massimiliano Botticelli <@>"]
 readme = "README.md"
 packages = [{ include = "src" }]
 
@@ -12,6 +12,7 @@ mlflow = "^3.6.0"
 kaggle = "^1.8.0"
 databricks-langchain = "^0.11.0"
 streamlit = "^1.51.0"
+databricks-agents = "^1.8.2"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^7.0.0"
