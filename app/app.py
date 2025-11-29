@@ -89,17 +89,31 @@ def load_agent() -> Any:
     Raises:
         Exception: If the model fails to load from Unity Catalog.
     """
-    import mlflow
+    if "WHEELS_PATH" in os.environ:
+        from autostrategist_ai.agents import graph as agent_graph
 
-    model_uri = f"models:/{UC_MODEL_PATH}@{MODEL_ALIAS}"
+        st.sidebar.success("✅ Using Wheels Agents deployment")
 
-    try:
-        model = mlflow.langchain.load_model(model_uri)
-        st.sidebar.success(f"✅ Loaded model: `{MODEL_ALIAS}`")
-        return model
-    except Exception as e:
-        st.error(f"Failed to load champion model from {model_uri}: {e}")
-        raise
+        return agent_graph
+    
+    else:
+
+        import mlflow
+
+        model_uri = f"models:/{UC_MODEL_PATH}@{MODEL_ALIAS}"
+
+        try:
+            # Log before download starts
+            st.info("Starting model download from Unity Catalog...")
+            
+            # Load model with explicit dst_path to use a controlled location
+            model = mlflow.langchain.load_model(model_uri)
+            
+            st.sidebar.success(f"✅ Loaded model: `{MODEL_ALIAS}`")
+            return model
+        except Exception as e:
+            st.error(f"Failed to load champion model from {model_uri}: {e}")
+            raise
 
 
 # =============================================================================

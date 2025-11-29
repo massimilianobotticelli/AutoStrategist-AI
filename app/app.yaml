@@ -7,10 +7,13 @@ command: [
 env:
   - name: STREAMLIT_BROWSER_GATHER_USAGE_STATS
     value: "false"
-  - name: "SERVING_ENDPOINT"
-    valueFrom: "serving-endpoint"
   - name: MLFLOW_TRACKING_URI
     value: "databricks"
   - name: MLFLOW_REGISTRY_URI
     value: "databricks-uc"
-
+  - name: WHEELS_PATH
+    value: "/Volumes/workspace/car_sales/artifactory/autostrategist_ai-0.1.0-py3-none-any.whl"
+  - name: VOLUME_PATH
+    valueFrom: artifactory
+  - name: DATABRICKS_SERVERLESS_COMPUTE_ID
+    value: "auto"

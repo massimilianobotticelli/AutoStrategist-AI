@@ -18,9 +18,36 @@ from typing import Optional
 
 import mlflow
 from databricks import agents
+from databricks.sdk import WorkspaceClient
 from mlflow import MlflowClient
 from mlflow.models import infer_signature
 from mlflow.models.resources import DatabricksServingEndpoint
+
+
+def upload_to_volume(
+    local_file_path: str,
+    volume_path: str,
+    overwrite: bool = True,
+) -> str:
+
+    # Initialize Databricks Workspace Client
+    w = WorkspaceClient()
+
+    # Get the filename from local path
+    filename = os.path.basename(local_file_path)
+
+    # Destination path in the volume
+    dest_path = f"{volume_path}/{filename}"
+
+    # Read local file and upload
+    with open(local_file_path, "rb") as f:
+        file_content = f.read()
+
+    # Upload to volume using the files API
+    w.files.upload(dest_path, file_content, overwrite=overwrite)
+
+    print(f"Uploaded {local_file_path} to {dest_path}")
+    return dest_path
 
 
 
@@ -213,6 +240,10 @@ DEFAULT_UC_MODEL_PATH = "workspace.car_sales.car_sales_workflow_model"
 DEFAULT_ENDPOINT_NAME = "car-sales-workflow-endpoint"
 DEFAULT_TAGS = {"project": "car_sales_workflow", "owner": "data_team"}
 
+# Volume Configuration
+DEFAULT_VOLUME_PATH = "/Volumes/workspace/car_sales/artifactory"
+DEFAULT_WHEEL_PATH = "./dist/autostrategist_ai-0.1.0-py3-none-any.whl"
+
 
 def main():
     """Execute the full model deployment pipeline."""
@@ -250,7 +281,20 @@ def main():
     )
     print(f"Deployment complete: {deployment_info}")
 
+    # Upload wheel file to volume
+    upload_to_volume(
+        local_file_path="./dist/autostrategist_ai-0.1.0-py3-none-any.whl",
+        volume_path="/Volumes/workspace/car_sales/artifactory"
+    )
+
+    print("Model deployment pipeline completed successfully.")
+
 
 if __name__ == "__main__":
-    main()
+    # main()
+    # Upload wheel file to volume
+    upload_to_volume(
+        local_file_path="./dist/autostrategist_ai-0.1.0-py3-none-any.whl",
+        volume_path="/Volumes/workspace/car_sales/artifactory"
+    )    
   
