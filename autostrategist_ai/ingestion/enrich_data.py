@@ -1,14 +1,29 @@
-"""
-Data Enrichment Script
+"""Data Enrichment Script.
 
-This script enriches vehicle data by extracting structured information from unstructured text descriptions
-using a Large Language Model (LLM). It handles data reading, LLM inference via a Spark UDF,
-smart merging of extracted data with existing columns, and saving the enriched dataset.
+This script enriches vehicle data by extracting structured information from
+unstructured text descriptions using a Large Language Model (LLM).
+
+Workflow:
+    1. Read vehicle data from the source Databricks table.
+    2. Extract structured fields from free-text descriptions using LLM inference.
+    3. Smart merge: Fill missing values in original columns with LLM-extracted data.
+    4. Save the enriched dataset to the target Databricks table.
+
+Key Features:
+    - Uses Spark Pandas UDF for distributed LLM inference across partitions.
+    - Initializes LLM client once per partition for efficiency.
+    - Preserves original data when available, only filling null values.
+
+Warning - LLM Implementation Notes:
+    For production deployment, consider:
+    * **Rate Limiting:** Implement backoff strategies for API rate limits.
+    * **Caching:** Cache LLM responses to avoid redundant API calls.
+    * **Validation:** Add schema validation for LLM-extracted data.
 """
 
 import json
 import os
-from typing import Iterator
+from typing import Callable, Iterator
 
 import pandas as pd
 from config import EN_SOURCE_TABLE, EN_TARGET_TABLE, LLM_ENDPOINT
@@ -20,8 +35,8 @@ from pyspark.dbutils import DBUtils
 from pyspark.sql.functions import coalesce, col, pandas_udf
 from pyspark.sql.types import StringType, StructField, StructType
 
-# Schema for UDF Output
-SCHEMA = StructType(
+# Schema for UDF output defining the structure of extracted vehicle information
+SCHEMA: StructType = StructType(
     [
         StructField("manufacturer", StringType(), True),
         StructField("model", StringType(), True),
@@ -38,9 +53,25 @@ SCHEMA = StructType(
 )
 
 
-def get_credentials(dbutils):
-    """
-    Retrieves Databricks credentials from environment variables or notebook context.
+def get_credentials(dbutils: DBUtils) -> tuple[str, str]:
+    """Retrieve Databricks credentials from environment or notebook context.
+
+    Attempts to get credentials in the following order:
+    1. Environment variables (DATABRICKS_HOST, DATABRICKS_TOKEN)
+    2. Notebook context (when running in Databricks)
+
+    Args:
+        dbutils: Databricks utilities object for accessing notebook context.
+
+    Returns:
+        A tuple of (host_url, api_token) for Databricks authentication.
+
+    Raises:
+        ValueError: If credentials cannot be obtained from any source.
+
+    Example:
+        >>> db_host, db_token = get_credentials(dbutils)
+        >>> print(f"Connecting to {db_host}")
     """
     db_host = os.environ.get("DATABRICKS_HOST")
     db_token = os.environ.get("DATABRICKS_TOKEN")
@@ -60,17 +91,52 @@ def get_credentials(dbutils):
     return db_host, db_token
 
 
-def create_extract_vehicle_info_udf(service_host, service_token):
-    """
-    Factory function to create the UDF with captured credentials.
+def create_extract_vehicle_info_udf(
+    service_host: str, service_token: str
+) -> Callable[[Iterator[pd.Series]], Iterator[pd.DataFrame]]:
+    """Create a Pandas UDF for extracting vehicle info from text descriptions.
+
+    Factory function that creates a Spark Pandas UDF with captured credentials.
+    The UDF uses an LLM to extract structured vehicle information from free-text
+    descriptions.
+
+    Args:
+        service_host: Databricks workspace host URL for LLM endpoint access.
+        service_token: Databricks API token for authentication.
+
+    Returns:
+        A Pandas UDF function that can be applied to a Spark DataFrame column.
+        The UDF accepts text descriptions and returns a struct with extracted
+        vehicle fields (manufacturer, model, year, price, etc.).
+
+    Note:
+        The returned UDF uses Iterator pattern for efficiency - the LLM client
+        is initialized once per Spark partition rather than per row.
     """
     prompt = PromptTemplate(template=PROMPT_ENRICH_COLUMNS, input_variables=["free_text"])
 
     @pandas_udf(SCHEMA)
-    def extract_vehicle_info_udf(iterator: Iterator[pd.Series]) -> Iterator[pd.DataFrame]:
-        """
-        A Scalar Iterator UDF that processes data in batches (partitions).
-        Using an Iterator allows us to initialize the LLM client ONCE per partition.
+    def extract_vehicle_info_udf(
+        iterator: Iterator[pd.Series],
+    ) -> Iterator[pd.DataFrame]:
+        """Process vehicle descriptions in batches using LLM inference.
+
+        A Scalar Iterator Pandas UDF that extracts structured vehicle information
+        from free-text descriptions. Uses Iterator pattern to initialize the LLM
+        client once per Spark partition for efficiency.
+
+        Args:
+            iterator: Iterator of pandas Series, where each Series contains
+                a batch of vehicle description strings from a Spark partition.
+
+        Yields:
+            pandas DataFrame with extracted vehicle fields for each batch.
+            Each row contains: manufacturer, model, year, price, odometer,
+            transmission, fuel, drive, type, paint_color, condition.
+
+        Note:
+            Failed extractions return empty dictionaries, resulting in null
+            values for all fields in that row.
         """
         # --- WORKER INITIALIZATION (Runs once per partition) ---
         if service_host:
@@ -100,9 +166,33 @@ def create_extract_vehicle_info_udf(service_host, service_token):
     return extract_vehicle_info_udf
 
 
-def main():
-    """
-    Main execution function.
+def main() -> None:
+    """Execute the data enrichment pipeline.
+
+    This is the main entry point that orchestrates the entire enrichment workflow:
+
+    1. Initializes Spark session and retrieves Databricks credentials.
+    2. Reads vehicle data from the configured source table.
+    3. Creates and applies LLM-based UDF to extract info from descriptions.
+    4. Smart merges extracted data with existing columns (fills nulls only).
+    5. Saves enriched data to the target table.
+    6. Reports statistics on recovered null values.
+
+    Configuration:
+        Source/target tables and LLM endpoint are configured via the `config`
+        module: EN_SOURCE_TABLE, EN_TARGET_TABLE, LLM_ENDPOINT.
+
+    Side Effects:
+        - Writes enriched data to EN_TARGET_TABLE (overwrite mode).
+        - Prints progress and statistics to stdout.
+
+    Raises:
+        ValueError: If Databricks credentials cannot be obtained.
+        Exception: If data cannot be read, processed, or written.
+
+    Note:
+        Data is repartitioned to 8 partitions for parallelized LLM inference.
+        Adjust based on cluster size and API rate limits.
     """
     # Initialize Spark and DBUtils
     spark = DatabricksSession.builder.getOrCreate()
