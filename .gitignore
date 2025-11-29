@@ -222,8 +222,8 @@ mlartifacts/
 
 # Databricks Asset Bundles
 .bundle/
-
 .databricks
+databricks.yml
 
 # Kaggle
 kaggle.json

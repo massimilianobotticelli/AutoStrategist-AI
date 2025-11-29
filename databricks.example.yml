@@ -6,7 +6,9 @@ bundle:
   name: AutoStrategist-AI
 
 include:
-  - resources/ingestion.yml
+  - ./resources/ingestion.yml
+  - ./resources/app.yml
+  - ./resources/deploy.yml
 
 targets:
   dev:
@@ -14,28 +16,6 @@ targets:
     default: true
     workspace:
       host: <YOUR_DATABRICKS_WORKSPACE_URL>
-
-variables:
-  catalog_name:
-    description: The Unity Catalog name for the project
-    default: workspace
-  schema_name:
-    description: The Schema (database) name
-    default: car_sales
-  volume_name:
-    description: Volume for raw data
-    default: raw_data
-  my_cluster_id:
-    description: The cluster ID to use for running jobs
-    default: 82b27ab5abb8c180
-
-sync:
-  exclude:
-    - .git/
-    - .vscode/
-    - .github/
-    - .devcontainer/
-    - .venv/
 
   ## Optionally, there could be 'staging' or 'prod' targets here.
   #
