@@ -16,6 +16,8 @@ An AI-powered platform for optimizing second-hand car sales, built on Databricks
 - **🚀 MLflow Integration**: Model tracking, registration, and deployment via Unity Catalog
 - **📦 Databricks Apps**: Production-ready deployment as a Databricks App
 
+![App Screenshot](app_screenshot.png)
+
 ## 🏗️ Architecture
 
 This project uses a modern data & AI architecture on Databricks:
@@ -26,6 +28,8 @@ This project uses a modern data & AI architecture on Databricks:
 - **Model Registry**: MLflow with Unity Catalog integration
 - **Deployment**: Databricks Asset Bundles (DABs) + Databricks Apps
 - **Compute**: Databricks Connect + Serverless Compute
+
+![Architecture Infographic](infografic.png)
 
 ## 🚀 Getting Started
 
