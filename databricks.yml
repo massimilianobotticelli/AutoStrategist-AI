@@ -6,7 +6,7 @@ bundle:
   name: AutoStrategist-AI-local
 
 include:
-  # - ./resources/ingestion.yml
+  - ./resources/ingestion.yml
   - ./resources/app.yml
   - ./resources/deploy.yml
 

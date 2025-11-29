@@ -7,7 +7,6 @@ from databricks_langchain import ChatDatabricks
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage
 from langchain.tools import tool
-from pyspark.dbutils import DBUtils
 
 from autostrategist_ai.agents.data_structures import (
     MarketAnalysisResults,
@@ -21,12 +20,13 @@ from autostrategist_ai.agents.prompts import (
     REPAIR_SPECIALIST_DESCRIPTION,
     REPAIR_SPECIALIST_SYSTEM_PROMPT,
 )
+from autostrategist_ai.config import LLM_ENDPOINT
 
-# Initialize Spark and DBUtils
+# Initialize Spark
 spark = DatabricksSession.builder.getOrCreate()
-dbutils = DBUtils(spark)
 
-llm = ChatDatabricks(endpoint="databricks-gpt-oss-120b")
+# Initialize LLM
+llm = ChatDatabricks(endpoint=LLM_ENDPOINT)
 
 
 @tool

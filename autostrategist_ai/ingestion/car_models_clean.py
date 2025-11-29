@@ -15,15 +15,11 @@ from messy strings, cleans the dataframe, and saves the result.
 import json
 
 import mlflow
+from config import CL_SOURCE_TABLE, CL_TARGET_TABLE, LLM_ENDPOINT
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain_core.prompts import PromptTemplate
 from prompts import PROMPT_CLEAN_MODEL
-
-# Constants
-SOURCE_TABLE = "workspace.car_sales.vehicles_cleaned"
-TARGET_TABLE = "workspace.car_sales.vehicles_models_cleaned"
-LLM_ENDPOINT = "databricks-gpt-oss-120b"
 
 
 def get_model_counts(df):
@@ -89,8 +85,8 @@ def main():
     mlflow.set_experiment("/Shared/AutoStrategist-AI/")
     mlflow.langchain.autolog()
 
-    print(f"Reading data from {SOURCE_TABLE}...")
-    sdf_vehicles = spark.table(SOURCE_TABLE)
+    print(f"Reading data from {CL_SOURCE_TABLE}...")
+    sdf_vehicles = spark.table(CL_SOURCE_TABLE)
 
     # Convert to pandas (assuming small dataset fits in driver memory)
     print("Converting to Pandas DataFrame...")
@@ -123,8 +119,8 @@ def main():
     print(get_model_counts(df_vehicles_cleaned).head())
 
     # Save result
-    print(f"Saving cleaned data to {TARGET_TABLE}...")
-    spark.createDataFrame(df_vehicles_cleaned).write.mode("overwrite").saveAsTable(TARGET_TABLE)
+    print(f"Saving cleaned data to {CL_TARGET_TABLE}...")
+    spark.createDataFrame(df_vehicles_cleaned).write.mode("overwrite").saveAsTable(CL_TARGET_TABLE)
     print("Process complete.")
 
 

@@ -7,19 +7,19 @@ into Delta tables within the specified catalog and schema.
 
 import os
 
+from config import (
+    CATALOG,
+    REPAIR_CSV_NAME,
+    REPAIR_TABLE,
+    SCHEMA,
+    VEHICLE_CSV_NAME,
+    VEHICLE_TABLE,
+    VOLUME,
+)
 from databricks.connect import DatabricksSession
 
 # Constants
-CATALOG = "workspace"
-SCHEMA = "car_sales"
-VOLUME = "raw_data"
 TARGET_VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/"
-
-VEHICLE_CSV_NAME = "vehicles.csv"
-REPAIR_CSV_NAME = "car_repair_costs.csv"
-
-VEHICLE_TABLE = f"{CATALOG}.{SCHEMA}.vehicles"
-REPAIR_TABLE = f"{CATALOG}.{SCHEMA}.reparations"
 
 
 def ingest_csv_to_table(spark, csv_path, table_name):

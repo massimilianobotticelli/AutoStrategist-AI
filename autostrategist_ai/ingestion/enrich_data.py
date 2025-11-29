@@ -11,6 +11,7 @@ import os
 from typing import Iterator
 
 import pandas as pd
+from config import EN_SOURCE_TABLE, EN_TARGET_TABLE, LLM_ENDPOINT
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain_core.prompts import PromptTemplate
@@ -18,11 +19,6 @@ from prompts import PROMPT_ENRICH_COLUMNS
 from pyspark.dbutils import DBUtils
 from pyspark.sql.functions import coalesce, col, pandas_udf
 from pyspark.sql.types import StringType, StructField, StructType
-
-# Constants
-SOURCE_TABLE = "workspace.car_sales.vehicles_models_cleaned"
-TARGET_TABLE = "workspace.car_sales.vehicles_enriched"
-LLM_ENDPOINT = "databricks-gpt-oss-120b"
 
 # Schema for UDF Output
 SCHEMA = StructType(
@@ -115,8 +111,8 @@ def main():
     # Get Credentials
     db_host, db_token = get_credentials(dbutils)
 
-    print(f"Reading data from {SOURCE_TABLE}...")
-    df_cleaned = spark.table(SOURCE_TABLE)
+    print(f"Reading data from {EN_SOURCE_TABLE}...")
+    df_cleaned = spark.table(EN_SOURCE_TABLE)
 
     # Initial Stats
     initial_null_entries = df_cleaned.toPandas().isnull().sum().sum()
@@ -154,11 +150,11 @@ def main():
     df_final = df_processed.select(*final_columns).drop("description", "id")
 
     # Save Result
-    print(f"Saving enriched data to {TARGET_TABLE}...")
-    df_final.write.mode("overwrite").saveAsTable(TARGET_TABLE)
+    print(f"Saving enriched data to {EN_TARGET_TABLE}...")
+    df_final.write.mode("overwrite").saveAsTable(EN_TARGET_TABLE)
 
     # Final Stats
-    df_final_read = spark.table(TARGET_TABLE)
+    df_final_read = spark.table(EN_TARGET_TABLE)
     final_null_entries = df_final_read.toPandas().isnull().sum().sum()
     recovered = initial_null_entries - final_null_entries
     percentage = round(recovered / initial_null_entries * 100, 2) if initial_null_entries > 0 else 0

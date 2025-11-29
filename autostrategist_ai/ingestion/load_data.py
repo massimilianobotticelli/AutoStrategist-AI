@@ -4,6 +4,7 @@ Ingestion script to download Kaggle dataset to Databricks Volume.
 
 import os
 
+from config import CATALOG, DATASET_NAME, SCHEMA, VOLUME
 from databricks.connect import DatabricksSession
 from pyspark.dbutils import DBUtils
 from reparation_data import REPARATION_CSV
@@ -13,10 +14,6 @@ spark = DatabricksSession.builder.getOrCreate()
 dbutils = DBUtils(spark)
 
 # Setup volume configuration
-CATALOG = "workspace"
-SCHEMA = "car_sales"
-VOLUME = "raw_data"
-DATASET_NAME = "austinreese/craigslist-carstrucks-data"
 TARGET_VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/"
 
 

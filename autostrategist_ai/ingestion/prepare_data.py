@@ -6,28 +6,15 @@ cleans the data by removing unnecessary columns and invalid rows,
 and saves the cleaned dataset to a new table.
 """
 
+from config import (
+    COLUMNS_TO_DROP,
+    PREP_SOURCE_TABLE,
+    PREP_TARGET_TABLE,
+    SAMPLE_FRACTION,
+    TARGET_MANUFACTURERS,
+)
 from databricks.connect import DatabricksSession
 from pyspark.dbutils import DBUtils
-
-# Constants
-SOURCE_TABLE = "workspace.car_sales.vehicles"
-TARGET_TABLE = "workspace.car_sales.vehicles_cleaned"
-TARGET_MANUFACTURERS = ["ford", "toyota", "chevrolet", "honda"]
-COLUMNS_TO_DROP = [
-    "url",
-    "region",
-    "region_url",
-    "VIN",
-    "image_url",
-    "county",
-    "size",
-    "title_status",
-    "state",
-    "lat",
-    "long",
-    "posting_date",
-]
-SAMPLE_FRACTION = 0.01
 
 
 def main():
@@ -40,8 +27,8 @@ def main():
     # keeping it if needed for future extensions or context.
     _ = DBUtils(spark)
 
-    print(f"Reading data from {SOURCE_TABLE}...")
-    df_original = spark.table(SOURCE_TABLE)
+    print(f"Reading data from {PREP_SOURCE_TABLE}...")
+    df_original = spark.table(PREP_SOURCE_TABLE)
 
     # Filter by manufacturer and sample
     print(
@@ -70,8 +57,8 @@ def main():
     print(f"Cleaned dataset contains {row_count} rows.")
 
     # Write to table
-    print(f"Writing cleaned data to {TARGET_TABLE}...")
-    df_cleaned.write.mode("overwrite").saveAsTable(TARGET_TABLE)
+    print(f"Writing cleaned data to {PREP_TARGET_TABLE}...")
+    df_cleaned.write.mode("overwrite").saveAsTable(PREP_TARGET_TABLE)
     print("Data preparation complete.")
 
 
