@@ -18,6 +18,7 @@ databricks-agents = "^1.8.2"
 isort = "^7.0.0"
 black = "^25.11.0"
 pylint = "^4.0.3"
+pytest = "^9.0.1"
 
 [tool.black]
 line-length = 100
