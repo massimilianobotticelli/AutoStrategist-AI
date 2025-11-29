@@ -104,7 +104,6 @@ databricks bundle deploy
 
 ```
 AutoStrategist-AI/
-├── databricks.yml              # Databricks Asset Bundle configuration
 ├── databricks.example.yml      # Example DABs template
 ├── pyproject.toml              # Poetry dependencies & project config
 ├── deploy.py                   # MLflow model deployment utilities
