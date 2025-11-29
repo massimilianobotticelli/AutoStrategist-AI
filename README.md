@@ -206,6 +206,29 @@ databricks bundle deploy
 # The app configuration is in app/app.yaml
 ```
 
+### ⚠️ Important: Building and Uploading the Wheel Package
+
+> **Note for Databricks Community Edition / Free Tier Users:** Model Serving Endpoints are not available on the free tier. This project uses a workaround where the agent is loaded directly from the `autostrategist_ai` package (installed via a wheel file) instead of downloading from a Unity Catalog registered model.
+
+The Databricks App requires the `autostrategist_ai` package to be available as a wheel file in a Unity Catalog Volume. You must build and upload the wheel manually:
+
+1. **Build the wheel package**
+   ```bash
+   poetry build
+   ```
+
+2. **Upload the wheel to the Databricks Volume**
+   ```bash
+   databricks fs cp ./dist/autostrategist_ai-0.1.0-py3-none-any.whl dbfs:/Volumes/workspace/car_sales/artifactory/
+   ```
+
+3. **Verify the upload**
+   ```bash
+   databricks fs ls dbfs:/Volumes/workspace/car_sales/artifactory/
+   ```
+
+The app uses the `WHEELS_MODULE` environment variable (configured in `app/app.yaml`) to determine whether to load the agent from the wheel package or from MLflow. When set to `"true"`, the app imports the agent directly from the installed package.
+
 ## 🛠️ Development Workflow
 
 ### Working with Databricks Asset Bundles
@@ -305,3 +328,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [MLflow](https://mlflow.org/) for model lifecycle management
 - [Streamlit](https://streamlit.io/) for the chat interface
 - [Kaggle](https://www.kaggle.com/) for the Craigslist Cars dataset
+
+## 🔮 Future Development
+
+- **Automated wheel deployment**: Create a script or GitHub Action to automatically build and upload the wheel package to the Databricks Volume on each release
+- **Model Serving Endpoint**: For users with Databricks paid tiers, add support for deploying the agent as a Model Serving Endpoint
