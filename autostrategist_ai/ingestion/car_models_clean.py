@@ -6,7 +6,8 @@ It reads cleaned vehicle data, uses a Large Language Model to identify unique ba
 from messy strings, cleans the dataframe, and saves the result.
 
 ⚠️ LLM Implementation Notes & Optimizations
-**Data normalization performed via LLM.** For production deployment, the following improvements are required:
+**Data normalization performed via LLM.** For production deployment, the following improvements are
+    required:
 * **Robustness:** Expand the prompt with **few-shot examples** covering complex edge cases.
 * **Validation:** Implement automated tests to verify JSON schema compliance and output consistency.
 """
@@ -17,7 +18,7 @@ import mlflow
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain_core.prompts import PromptTemplate
-from prompts import prompt_clean_models
+from prompts import PROMPT_CLEAN_MODEL
 
 # Constants
 SOURCE_TABLE = "workspace.car_sales.vehicles_cleaned"
@@ -58,7 +59,7 @@ def get_normalized_models_from_llm(unique_models_list):
     Invokes the LLM to extract unique base model names from a list of (manufacturer, model) tuples.
     """
 
-    prompt = PromptTemplate(template=prompt_clean_models, input_variables=["list_cars"])
+    prompt = PromptTemplate(template=PROMPT_CLEAN_MODEL, input_variables=["list_cars"])
     model = ChatDatabricks(endpoint=LLM_ENDPOINT)
     chain = prompt | model
 

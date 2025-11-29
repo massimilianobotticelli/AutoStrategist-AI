@@ -6,7 +6,7 @@ import os
 
 from databricks.connect import DatabricksSession
 from pyspark.dbutils import DBUtils
-from reparation_data import reparation_csv
+from reparation_data import REPARATION_CSV
 
 # Initialize Spark and DBUtils
 spark = DatabricksSession.builder.getOrCreate()
@@ -96,7 +96,7 @@ def load_reparation_data():
     """Loads reparation data into a Delta table."""
     csv_path = os.path.join(TARGET_VOLUME_PATH, "car_repair_costs.csv")
     with open(csv_path, "w", encoding="utf-8") as f:
-        f.write(reparation_csv.strip())
+        f.write(REPARATION_CSV.strip())
     print(f"CSV written to {csv_path}")
 
 

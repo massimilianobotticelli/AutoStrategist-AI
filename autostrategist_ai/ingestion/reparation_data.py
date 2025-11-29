@@ -1,4 +1,6 @@
-reparation_csv = """
+"""Reparation data CSV for ingestion into the database."""
+
+REPARATION_CSV = """
 component,diagnostic,reparation_cost
 Brake Pads (Front),squeaking noise when braking,250
 Brake Pads (Rear),grinding noise from rear,250

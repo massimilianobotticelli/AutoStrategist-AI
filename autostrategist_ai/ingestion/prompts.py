@@ -1,4 +1,6 @@
-prompt_clean_models = """
+"""Prompts used for data ingestion and cleaning tasks."""
+
+PROMPT_CLEAN_MODEL = """
 You are a car expert. You are given a list of car models with extraneous details included in the model string (like engine volume, door count, body type, etc.). Your task is to extract and return a list of the **unique, base model names** from this input.
 
 Important: return only the json without any comments!
@@ -22,7 +24,7 @@ Output:
 list of cars: {list_cars}
 """
 
-prompt_enrich_columns = """
+PROMPT_ENRICH_COLUMNS = """
 You will get a free text. You need to extract the following information, if available:
 - manufacturer
 - model

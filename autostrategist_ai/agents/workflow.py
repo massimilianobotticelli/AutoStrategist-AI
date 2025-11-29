@@ -1,13 +1,13 @@
+"""Workflow agent that integrates LLM with car sales and reparations databases."""
+
 import dotenv
 import mlflow
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain.agents import create_agent
-from langchain.messages import AIMessage, HumanMessage
-from langgraph.checkpoint.memory import MemorySaver
 from pyspark.dbutils import DBUtils
 
-from autostrategist_ai.agents.prompts import system_prompt
+from autostrategist_ai.agents.prompts import SYSTEM_PROMPT
 from autostrategist_ai.agents.tools import search_reparation_database, search_vehicle_database
 
 dotenv.load_dotenv()
@@ -57,7 +57,7 @@ repair_table_context = get_table_schema_string("workspace.car_sales.reparations"
 
 graph = create_agent(
     model=llm,
-    system_prompt=system_prompt,
+    system_prompt=SYSTEM_PROMPT,
     tools=[search_vehicle_database, search_reparation_database],
 )
 

@@ -14,7 +14,7 @@ import pandas as pd
 from databricks.connect import DatabricksSession
 from databricks_langchain import ChatDatabricks
 from langchain_core.prompts import PromptTemplate
-from prompts import prompt_enrich_columns
+from prompts import PROMPT_ENRICH_COLUMNS
 from pyspark.dbutils import DBUtils
 from pyspark.sql.functions import coalesce, col, pandas_udf
 from pyspark.sql.types import StringType, StructField, StructType
@@ -68,7 +68,7 @@ def create_extract_vehicle_info_udf(service_host, service_token):
     """
     Factory function to create the UDF with captured credentials.
     """
-    prompt = PromptTemplate(template=prompt_enrich_columns, input_variables=["free_text"])
+    prompt = PromptTemplate(template=PROMPT_ENRICH_COLUMNS, input_variables=["free_text"])
 
     @pandas_udf(SCHEMA)
     def extract_vehicle_info_udf(iterator: Iterator[pd.Series]) -> Iterator[pd.DataFrame]:

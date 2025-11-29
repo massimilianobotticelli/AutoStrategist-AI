@@ -1,3 +1,5 @@
+"""Tools for querying the car sales and reparations databases using Spark SQL."""
+
 import json
 
 from databricks.connect import DatabricksSession
@@ -14,10 +16,10 @@ from autostrategist_ai.agents.data_structures import (
     VehicleData,
 )
 from autostrategist_ai.agents.prompts import (
-    market_analysit_description,
-    market_analyst_system_prompt,
-    repair_specialist_description,
-    repair_specialist_system_prompt,
+    MARKET_ANALYST_DESCRIPTION,
+    MARKET_ANALYST_SYSTEM_PROMPT,
+    REPAIR_SPECIALIST_DESCRIPTION,
+    REPAIR_SPECIALIST_SYSTEM_PROMPT,
 )
 
 # Initialize Spark and DBUtils
@@ -57,7 +59,8 @@ def execute_market_sql(sql_query: str) -> str:
                 {
                     "found": False,
                     "data": [],
-                    "message": "Query returned 0 results. Try using broader wildcards (e.g. ILIKE '%Mustang%') or removing filters like 'condition'.",
+                    "message": "Query returned 0 results. Try using broader wildcards (e.g. ILIKE "
+                    "'%Mustang%') or removing filters like 'condition'.",
                 }
             )
 
@@ -67,7 +70,8 @@ def execute_market_sql(sql_query: str) -> str:
                 {
                     "found": False,
                     "data": results,
-                    "message": "Aggregation found 0 matching cars. Relax filters: remove condition, expand year range, or use broader model wildcard.",
+                    "message": "Aggregation found 0 matching cars. Relax filters: remove "
+                    "condition, expand year range, or use broader model wildcard.",
                 }
             )
 
@@ -80,7 +84,8 @@ def execute_market_sql(sql_query: str) -> str:
             {
                 "error": True,
                 "message": f"SQL Execution Error: {str(e)}",
-                "hint": "Check column names, table name, and SQL syntax. Use ILIKE not LIKE for case-insensitive matching.",
+                "hint": "Check column names, table name, and SQL syntax. Use ILIKE not LIKE for"
+                "case-insensitive matching.",
             }
         )
 
@@ -116,7 +121,8 @@ def execute_repair_sql(sql_query: str) -> str:
                 {
                     "found": False,
                     "data": [],
-                    "message": "No repair records found. Try simpler component names (e.g., 'brake' instead of 'brake pads').",
+                    "message": "No repair records found. Try simpler component names (e.g.,"
+                    "'brake' instead of 'brake pads').",
                 }
             )
 
@@ -127,7 +133,8 @@ def execute_repair_sql(sql_query: str) -> str:
             {
                 "error": True,
                 "message": f"SQL Execution Error: {str(e)}",
-                "hint": "Use table workspace.car_sales.reparations. Check column names: component, diagnostic, cost.",
+                "hint": "Use table workspace.car_sales.reparations. Check column names: component,"
+                "diagnostic, cost.",
             }
         )
 
@@ -179,7 +186,7 @@ def build_market_query(vehicle_data: VehicleData) -> str:
     return query.strip()
 
 
-@tool("market_analyst", description=market_analysit_description)
+@tool("market_analyst", description=MARKET_ANALYST_DESCRIPTION)
 def search_vehicle_database(vehicle_data: VehicleData) -> MarketAnalysisResults:
     """Search for price ranges for the given vehicle information.
 
@@ -213,7 +220,8 @@ def search_vehicle_database(vehicle_data: VehicleData) -> MarketAnalysisResults:
     
     The initial query returned no results. Try these relaxation strategies:
     1. Remove condition filter
-    2. Use broader year range (e.g., BETWEEN {(vehicle_data.year or 2015) - 3} AND {(vehicle_data.year or 2015) + 3})
+    2. Use broader year range (e.g., BETWEEN {(vehicle_data.year or 2015) - 3} AND 
+        {(vehicle_data.year or 2015) + 3})
     3. Use simpler model matching (just the base model name)
     """
 
@@ -265,7 +273,7 @@ def build_repair_query(repair_data: RepairData) -> str:
     return query.strip()
 
 
-@tool("repair_specialist", description=repair_specialist_description)
+@tool("repair_specialist", description=REPAIR_SPECIALIST_DESCRIPTION)
 def search_reparation_database(repair_data: RepairData) -> RepairAnalysisResults:
     """Search for repair cost estimates based on components and diagnosis.
 
@@ -310,9 +318,9 @@ def search_reparation_database(repair_data: RepairData) -> RepairAnalysisResults
 
 
 market_analyst_agent = create_agent(
-    model=llm, tools=[execute_market_sql], system_prompt=market_analyst_system_prompt
+    model=llm, tools=[execute_market_sql], system_prompt=MARKET_ANALYST_SYSTEM_PROMPT
 )
 
 repair_specialist_agent = create_agent(
-    model=llm, tools=[execute_repair_sql], system_prompt=repair_specialist_system_prompt
+    model=llm, tools=[execute_repair_sql], system_prompt=REPAIR_SPECIALIST_SYSTEM_PROMPT
 )
