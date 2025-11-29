@@ -1,32 +1,41 @@
 # AutoStrategist-AI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
+[![Databricks](https://img.shields.io/badge/Databricks-Enabled-orange.svg)](https://databricks.com/)
+
 An AI-powered platform for optimizing second-hand car sales, built on Databricks. Features an intelligent chat agent that provides market analysis, repair cost estimation, and professional sales descriptions.
 
 ## 🎯 Features
 
-- **🤖 AI Sales Consultant**: LangGraph-based agent that interviews users about their vehicle
+- **🤖 AI Sales Consultant**: LangChain-based agent that interviews users about their vehicle
 - **📊 Market Analysis**: Real-time price estimation based on historical sales data
 - **🔧 Repair Cost Estimation**: Automatic deduction calculation for vehicle defects
 - **📝 Sales Copy Generation**: Professional listing descriptions for marketplaces
 - **💬 Streamlit Chat Interface**: User-friendly web application
+- **🚀 MLflow Integration**: Model tracking, registration, and deployment via Unity Catalog
+- **📦 Databricks Apps**: Production-ready deployment as a Databricks App
 
 ## 🏗️ Architecture
 
 This project uses a modern data & AI architecture on Databricks:
 
 - **Data Pipeline**: Medallion architecture (Bronze → Silver → Gold)
-- **AI Agent**: LangGraph with specialized sub-agents (Market Analyst, Repair Specialist)
+- **AI Agent**: LangChain with specialized tools (Market Analyst, Repair Specialist)
 - **LLM**: Databricks Foundation Models (`databricks-gpt-oss-120b`)
-- **Compute**: Databricks Connect + Serverless/Cluster
+- **Model Registry**: MLflow with Unity Catalog integration
+- **Deployment**: Databricks Asset Bundles (DABs) + Databricks Apps
+- **Compute**: Databricks Connect + Serverless Compute
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.11
 - Poetry (for dependency management)
 - Databricks workspace with:
-  - A running cluster OR serverless compute enabled
+  - Serverless compute enabled (recommended) OR a running cluster
+  - Unity Catalog enabled
   - Personal Access Token
 - Kaggle API credentials (for data ingestion)
 
@@ -34,7 +43,7 @@ This project uses a modern data & AI architecture on Databricks:
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/massimilianobotticelli/AutoStrategist-AI.git
    cd AutoStrategist-AI
    ```
 
@@ -59,8 +68,6 @@ This project uses a modern data & AI architecture on Databricks:
    KAGGLE_KEY=your-kaggle-api-key
    ```
 
-   > **Finding your Cluster ID**: Go to Databricks workspace → Compute → Select your cluster → The ID is in the URL or under "Advanced Options"
-
 4. **Configure Databricks CLI**
    ```bash
    databricks configure --token
@@ -82,14 +89,15 @@ This project uses a modern data & AI architecture on Databricks:
 
 ### Running the Application
 
-**Start the Streamlit chat interface:**
+**Option 1: Local Development (Streamlit)**
 ```bash
-poetry run streamlit run src/app/streamlit_app.py
+poetry run streamlit run app/app.py
 ```
 
-**Or run the CLI agent directly:**
+**Option 2: Deploy as Databricks App**
 ```bash
-poetry run python src/agents/workflow.py
+databricks bundle deploy
+# The app will be available at your Databricks workspace
 ```
 
 ## 📁 Project Structure
@@ -99,22 +107,21 @@ AutoStrategist-AI/
 ├── databricks.yml              # Databricks Asset Bundle configuration
 ├── databricks.example.yml      # Example DABs template
 ├── pyproject.toml              # Poetry dependencies & project config
+├── deploy.py                   # MLflow model deployment utilities
 ├── .env.example                # Environment variables template
 │
-├── resources/
-│   ├── ingestion.yml           # DABs job definitions for data pipeline
-│   └── ingestion-local.yml     # Local development job config
+├── app/                        # Databricks App (Streamlit)
+│   ├── app.py                  # Main Streamlit chat interface
+│   ├── app.yaml                # Databricks App configuration
+│   └── requirements.txt        # App-specific dependencies
 │
-├── src/
+├── autostrategist_ai/          # Main Python package
+│   ├── __init__.py
 │   ├── agents/                 # AI Agent components
-│   │   ├── workflow.py         # Main agent orchestration (CLI)
+│   │   ├── workflow.py         # Main agent orchestration
 │   │   ├── tools.py            # LangChain tools (SQL execution, sub-agents)
 │   │   ├── prompts.py          # System prompts for all agents
-│   │   ├── data_structures.py  # Pydantic models (VehicleData, RepairData)
-│   │   └── workflow.ipynb      # Interactive notebook version
-│   │
-│   ├── app/
-│   │   └── streamlit_app.py    # Streamlit chat interface
+│   │   └── data_structures.py  # Pydantic models (VehicleData, RepairData)
 │   │
 │   └── ingestion/              # Data pipeline scripts
 │       ├── load_data.py        # Download from Kaggle
@@ -126,16 +133,19 @@ AutoStrategist-AI/
 │       ├── reparation.csv      # Repair costs reference data
 │       └── prompts.py          # Prompts for data enrichment
 │
-├── development/                # Development notebooks
-│   ├── extract_details_dev.ipynb
-│   └── prepare_dev.ipynb
+├── resources/                  # Databricks Asset Bundle resources
+│   ├── app.yml                 # Databricks App deployment config
+│   ├── deploy.yml              # Model deployment job config
+│   └── ingestion.yml           # Data pipeline job definitions
 │
-└── 04_final_clean.ipynb        # Final data cleaning notebook
+└── development/                # Development notebooks
+    ├── extract_details_dev.ipynb
+    └── prepare_dev.ipynb
 ```
 
 ## 🤖 Agent Architecture
 
-The AutoStrategist agent uses a **supervisor pattern** with specialized sub-agents:
+The AutoStrategist agent uses a **tool-based pattern** with specialized capabilities:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -145,9 +155,17 @@ The AutoStrategist agent uses a **supervisor pattern** with specialized sub-agen
                   │                   │
     ┌─────────────▼─────────┐ ┌───────▼─────────────┐
     │    Market Analyst     │ │  Repair Specialist  │
-    │ (SQL: vehicles_enriched) │ │ (SQL: reparations)   │
+    │    (SQL Tool)         │ │     (SQL Tool)      │
+    │ (vehicles_enriched)   │ │   (reparations)     │
     └───────────────────────┘ └─────────────────────┘
 ```
+
+### Agent Tools
+
+| Tool | Description |
+|------|-------------|
+| `search_vehicle_database` | Queries historical sales data for market analysis |
+| `search_reparation_database` | Looks up repair component costs |
 
 ### Data Tables
 
@@ -155,6 +173,38 @@ The AutoStrategist agent uses a **supervisor pattern** with specialized sub-agen
 |-------|-------------|
 | `workspace.car_sales.vehicles_enriched` | Historical car sales with prices, specs |
 | `workspace.car_sales.reparations` | Repair components and costs |
+
+## 🚀 Deployment
+
+### Model Deployment with MLflow
+
+The project uses MLflow for model lifecycle management:
+
+```python
+# Log and register the model
+from deploy import log_experiment_lc, register_model, set_model_alias
+
+# Log experiment
+run_id = log_experiment_lc(graph, "experiment_name")
+
+# Register to Unity Catalog
+register_model(run_id, "workspace.car_sales.car_sales_workflow_model")
+
+# Set alias for production
+set_model_alias("workspace.car_sales.car_sales_workflow_model", "champion")
+```
+
+### Databricks Apps Deployment
+
+Deploy the Streamlit app as a Databricks App:
+
+```bash
+# Validate and deploy
+databricks bundle validate
+databricks bundle deploy
+
+# The app configuration is in app/app.yaml
+```
 
 ## 🛠️ Development Workflow
 
@@ -169,23 +219,26 @@ databricks bundle deploy
 
 # Run the data ingestion pipeline
 databricks bundle run ingest_kaggle_data
+
+# Run model deployment job
+databricks bundle run log_register_deploy
 ```
 
-### Monitoring Jobs
+### Local Development
 
 ```bash
-# List jobs
-databricks jobs list
+# Run the Streamlit app locally
+poetry run streamlit run app/app.py
 
-# Get job run details
-databricks runs get --run-id <run-id>
+# The app will connect to your Databricks workspace
+# using credentials from .env or databricks CLI config
 ```
 
 ### Code Formatting
 
 ```bash
-poetry run black src/
-poetry run isort src/
+poetry run black autostrategist_ai/
+poetry run isort autostrategist_ai/
 ```
 
 ## 📊 Data Pipeline
@@ -205,23 +258,50 @@ The pipeline follows the medallion architecture:
 
 ### "Cluster id or serverless are required"
 
-Add `DATABRICKS_CLUSTER_ID` to your `.env` file:
+Ensure you have serverless compute enabled or specify a cluster. For serverless:
 ```env
-DATABRICKS_CLUSTER_ID=0123-456789-abc12345
+DATABRICKS_SERVERLESS_COMPUTE_ID=auto
 ```
 
 ### Connection Issues
 
-1. Ensure your cluster is running in Databricks
+1. Ensure your Databricks workspace is accessible
 2. Verify `DATABRICKS_HOST` and `DATABRICKS_TOKEN` are correct
 3. Check that your token has not expired
+4. For local development, ensure `databricks configure` was run successfully
+
+### Model Loading Issues
+
+If the Streamlit app can't load the model:
+1. Verify the model exists in Unity Catalog: `workspace.car_sales.car_sales_workflow_model`
+2. Check the "champion" alias is set
+3. Ensure your token has permissions to access the model
 
 ## 🔐 Security
 
 - Store credentials in Databricks Secrets for production
 - Use `.env` for local development (never commit!)
 - Keep `.databrickscfg` secure and never commit to version control
+- The app uses Unity Catalog for secure model access
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📝 License
 
-See [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Databricks](https://databricks.com/) for the lakehouse platform
+- [LangChain](https://langchain.com/) for the agent framework
+- [MLflow](https://mlflow.org/) for model lifecycle management
+- [Streamlit](https://streamlit.io/) for the chat interface
+- [Kaggle](https://www.kaggle.com/) for the Craigslist Cars dataset

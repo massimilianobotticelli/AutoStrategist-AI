@@ -11,8 +11,3 @@ resources:
             permission: 'READ_VOLUME'
             securable_type: 'VOLUME'
             securable_full_name: 'workspace.car_sales.artifactory'
-        # - name: 'llm'
-        #   description: 'LLM volume for AutoStrategist-AI'
-        #   serving_endpoint:
-        #     name: 'llm-serving-endpoint'
-        #     permission: 'CAN_QUERY'

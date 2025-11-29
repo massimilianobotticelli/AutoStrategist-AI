@@ -6,35 +6,35 @@ resources:
         - task_key: "load_data"
           environment_key: ingestion-env
           spark_python_task:
-            python_file: "../src/ingestion/load_data.py"            
+            python_file: "../autostrategy_ai/ingestion/load_data.py"            
 
         - task_key: "ingest_data"
           environment_key: ingestion-env
           depends_on:
             - task_key: load_data          
           spark_python_task:
-            python_file: "../src/ingestion/ingest_data.py"   
+            python_file: "../autostrategy_ai/ingestion/ingest_data.py"   
 
         - task_key: prepare_data
           environment_key: ingestion-env
           depends_on:
             - task_key: ingest_data
           spark_python_task:
-            python_file: "../src/ingestion/prepare_data.py"
+            python_file: "../autostrategy_ai/ingestion/prepare_data.py"
 
         - task_key: car_models_clean
           environment_key: ingestion-env
-          # depends_on:
-            # - task_key: prepare_data
+          depends_on:
+            - task_key: prepare_data
           spark_python_task:
-            python_file: "../src/ingestion/car_models_clean.py"
+            python_file: "../autostrategy_ai/ingestion/car_models_clean.py"
 
         - task_key: enrich_data
           environment_key: ingestion-env
           depends_on:
             - task_key: car_models_clean
           spark_python_task:
-            python_file: "../src/ingestion/enrich_data.py"
+            python_file: "../autostrategy_ai/ingestion/enrich_data.py"
 
       environments:
         - environment_key: ingestion-env

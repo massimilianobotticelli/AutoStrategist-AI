@@ -68,7 +68,7 @@ class RepairData(BaseModel):
     components: Optional[List[str]] = None
 
     @field_validator("components", mode="before")
-    def convert_string_to_list(self, v):
+    def convert_string_to_list(cls, v):
         """Convert a single string component to a list.
 
         Args:

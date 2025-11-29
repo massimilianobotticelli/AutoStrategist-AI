@@ -211,13 +211,16 @@ def deploy_model(
         ...     endpoint_name="car-sales-endpoint",
         ... )
     """
-    return agents.deploy(
+    
+    deploy_info = agents.deploy(
         model_name=uc_model_path,
         model_version=model_version,
         scale_to_zero=scale_to_zero,
         tags=tags,
         endpoint_name=endpoint_name,
     )
+
+    return deploy_info
 
 # =============================================================================
 # Configuration Constants
@@ -243,6 +246,8 @@ DEFAULT_TAGS = {"project": "car_sales_workflow", "owner": "data_team"}
 # Volume Configuration
 DEFAULT_VOLUME_PATH = "/Volumes/workspace/car_sales/artifactory"
 DEFAULT_WHEEL_PATH = "./dist/autostrategist_ai-0.1.0-py3-none-any.whl"
+
+SERVING_ENDPOINT_ENABLED = False  # Set to True to enable deployment
 
 
 def main():
@@ -271,30 +276,28 @@ def main():
         alias="challenger",
     )
 
-    # Step 4: Deploy to serving endpoint
-    deployment_info = deploy_model(
-        uc_model_path=DEFAULT_UC_MODEL_PATH,
-        model_version=model_info.version,
-        tags=DEFAULT_TAGS,
-        endpoint_name=DEFAULT_ENDPOINT_NAME,
-        scale_to_zero=True,
-    )
-    print(f"Deployment complete: {deployment_info}")
-
-    # Upload wheel file to volume
-    upload_to_volume(
-        local_file_path="./dist/autostrategist_ai-0.1.0-py3-none-any.whl",
-        volume_path="/Volumes/workspace/car_sales/artifactory"
-    )
+    if not SERVING_ENDPOINT_ENABLED:
+        print("Deployment disabled because of Databricks Free Verson limitations.")
+    
+    else:
+        # Step 4: Deploy to serving endpoint
+        deployment_info = deploy_model(
+            uc_model_path=DEFAULT_UC_MODEL_PATH,
+            model_version=model_info.version,
+            tags=DEFAULT_TAGS,
+            endpoint_name=DEFAULT_ENDPOINT_NAME,
+            scale_to_zero=True,
+        )
+        print(f"Deployment complete: {deployment_info}")
 
     print("Model deployment pipeline completed successfully.")
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # Upload wheel file to volume
-    upload_to_volume(
-        local_file_path="./dist/autostrategist_ai-0.1.0-py3-none-any.whl",
-        volume_path="/Volumes/workspace/car_sales/artifactory"
-    )    
+    # upload_to_volume(
+    #     local_file_path="./dist/autostrategist_ai-0.1.0-py3-none-any.whl",
+    #     volume_path="/Volumes/workspace/car_sales/artifactory"
+    # )
   
