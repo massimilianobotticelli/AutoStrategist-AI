@@ -141,9 +141,7 @@ AutoStrategist-AI/
 │   ├── deploy.yml              # Model deployment job config
 │   └── ingestion.yml           # Data pipeline job definitions
 │
-└── development/                # Development notebooks
-    ├── extract_details_dev.ipynb
-    └── prepare_dev.ipynb
+└── tests/                      # Unit tests
 ```
 
 ## 🤖 Agent Architecture
