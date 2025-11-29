@@ -1,4 +1,5 @@
 mlflow>=3.6
 streamlit==1.51
 databricks-langchain>=0.11
+/Volumes/workspace/car_sales/artifactory/autostrategist_ai-0.1.0-py3-none-any.whl
 

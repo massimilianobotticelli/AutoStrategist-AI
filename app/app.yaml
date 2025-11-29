@@ -11,9 +11,11 @@ env:
     value: "databricks"
   - name: MLFLOW_REGISTRY_URI
     value: "databricks-uc"
-  - name: WHEELS_PATH
-    value: "/Volumes/workspace/car_sales/artifactory/autostrategist_ai-0.1.0-py3-none-any.whl"
-  - name: VOLUME_PATH
-    valueFrom: artifactory
+  - name: WHEELS_MODULE
+    value: "true"
   - name: DATABRICKS_SERVERLESS_COMPUTE_ID
     value: "auto"
+  - name: UC_MODEL_PATH
+    value: workspace.car_sales.car_sales_workflow_model
+  - name: MODEL_ALIAS
+    value: champion

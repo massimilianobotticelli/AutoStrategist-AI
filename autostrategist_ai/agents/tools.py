@@ -20,7 +20,7 @@ from autostrategist_ai.agents.prompts import (
     REPAIR_SPECIALIST_DESCRIPTION,
     REPAIR_SPECIALIST_SYSTEM_PROMPT,
 )
-from autostrategist_ai.config import LLM_ENDPOINT
+from autostrategist_ai.agents.config import LLM_ENDPOINT
 
 # Initialize Spark
 spark = DatabricksSession.builder.getOrCreate()

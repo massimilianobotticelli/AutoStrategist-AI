@@ -8,7 +8,7 @@ from langchain.agents import create_agent
 
 from autostrategist_ai.agents.prompts import SYSTEM_PROMPT
 from autostrategist_ai.agents.tools import search_reparation_database, search_vehicle_database
-from autostrategist_ai.config import (
+from autostrategist_ai.agents.config import (
     EXPERIMENT_PATH,
     LLM_ENDPOINT,
     TABLE_REPARATIONS,

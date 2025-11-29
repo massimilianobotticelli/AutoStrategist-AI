@@ -28,8 +28,8 @@ if os.environ.get("DATABRICKS_HOSTNAME") and not os.environ.get("DATABRICKS_HOST
 # =============================================================================
 
 # Unity Catalog model configuration
-UC_MODEL_PATH = "workspace.car_sales.car_sales_workflow_model"
-MODEL_ALIAS = "champion"
+UC_MODEL_PATH = os.environ['UC_MODEL_PATH']
+MODEL_ALIAS = os.environ['MODEL_ALIAS']
 
 # UI Configuration
 PAGE_TITLE = "AutoStrategist AI"
@@ -89,7 +89,7 @@ def load_agent() -> Any:
     Raises:
         Exception: If the model fails to load from Unity Catalog.
     """
-    if "WHEELS_PATH" in os.environ:
+    if os.environ.get("WHEELS_MODULE") == "true":
         from autostrategist_ai.agents import graph as agent_graph
 
         st.sidebar.success("✅ Using Wheels Agents deployment")
